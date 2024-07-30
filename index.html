@@ -43,13 +43,13 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 10px;
-            margin-bottom: 20px;
-            margin-left: 20px;
+            margin: 0 auto 20px;
             justify-content: center;
+            max-width: 350px;
         }
         .cell {
-            width: 50px;
-            height: 50px;
+            aspect-ratio: 1 / 1;
+            width: 100%;
             background-color: #3700b3;
             border: none;
             color: white;
@@ -58,6 +58,9 @@
             transition: all 0.3s ease;
             border-radius: 8px;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .cell:hover {
             background-color: #5600e8;
@@ -123,15 +126,33 @@
             vertical-align: middle;
             margin-right: 5px;
         }
-        @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .cell {
-                width: 45px;
-                height: 45px;
-                font-size: 18px;
-            }
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .game-over-content {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        .game-over h2 {
+            color: #cf6679;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .game-over p {
+            color: #e0e0e0;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -167,15 +188,27 @@
         </div>
     </div>
 
+    <div id="gameOver" class="game-over" style="display: none;">
+        <div class="game-over-content">
+            <h2>Game Over</h2>
+            <p>You hit a mine! This demonstrates how online gambling games can be unpredictable and risky.</p>
+            <button id="restartBtn" class="btn">Play Again</button>
+        </div>
+    </div>
+
     <script>
         const grid = document.getElementById('grid');
         const message = document.getElementById('message');
         const resetBtn = document.getElementById('resetBtn');
         const riggingBtn = document.getElementById('riggingBtn');
+        const gameOverScreen = document.getElementById('gameOver');
+        const restartBtn = document.getElementById('restartBtn');
         let isRigged = false;
+        let cellsRevealed = 0;
 
         function createGrid() {
             grid.innerHTML = '';
+            cellsRevealed = 0;
             for (let i = 0; i < 20; i++) {
                 const cell = document.createElement('button');
                 cell.classList.add('cell');
@@ -185,24 +218,29 @@
         }
 
         function revealCell(cell) {
-            cell.classList.add('pulse');
-            setTimeout(() => cell.classList.remove('pulse'), 500);
-
-            if (isRigged && Math.random() < 0.8) {
+            if (cellsRevealed >= 17 || (isRigged && Math.random() < 0.8)) {
                 cell.textContent = '💣';
                 cell.style.backgroundColor = '#cf6679';
-                message.textContent = 'You lost! This demonstrates how easily these games can be rigged against the player.';
+                showGameOver();
             } else {
                 cell.textContent = '💎';
                 cell.style.backgroundColor = '#03dac6';
                 message.textContent = 'You won this round, but remember: in real gambling, the house always wins in the long run.';
+                cellsRevealed++;
             }
+            cell.classList.add('pulse');
+            setTimeout(() => cell.classList.remove('pulse'), 500);
             cell.disabled = true;
+        }
+
+        function showGameOver() {
+            gameOverScreen.style.display = 'flex';
         }
 
         function resetGame() {
             createGrid();
             message.textContent = '';
+            gameOverScreen.style.display = 'none';
         }
 
         function toggleRigging() {
@@ -214,6 +252,7 @@
 
         resetBtn.addEventListener('click', resetGame);
         riggingBtn.addEventListener('click', toggleRigging);
+        restartBtn.addEventListener('click', resetGame);
 
         createGrid();
     </script>
