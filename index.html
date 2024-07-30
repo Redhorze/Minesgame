@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mines Game - Educational Demonstration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background-color: #121212;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        h1, h2 {
+            color: #bb86fc;
+            text-align: center;
+        }
+        .logo {
+            font-size: 2.5em;
+            font-weight: 600;
+            color: #03dac6;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1em;
+            color: #9a9a9a;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: #3700b3;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .cell:hover {
+            background-color: #5600e8;
+            transform: scale(1.05);
+        }
+        .cell:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+        #message {
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 50px;
+        }
+        .btn {
+            background-color: #03dac6;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 10px 20px;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .btn:hover {
+            background-color: #018786;
+            transform: translateY(-2px);
+        }
+        #riggingBtn.rigged {
+            background-color: #cf6679;
+        }
+        .info {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 0.5s;
+        }
+        .attribution {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #9a9a9a;
+        }
+        .attribution a {
+            color: #03dac6;
+            text-decoration: none;
+        }
+        .attribution img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .cell {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Mines Game</div>
+        <div class="subtitle">Online Gambling Mechanics Demonstration</div>
+        <p style="text-align: center;">This demonstration shows how easily online gambling games can be manipulated. It is not a real gambling game.</p>
+        
+        <div class="grid" id="grid"></div>
+        
+        <div id="message"></div>
+        
+        <div style="text-align: center;">
+            <button id="resetBtn" class="btn">Reset Game</button>
+            <button id="riggingBtn" class="btn">Toggle Rigging</button>
+        </div>
+        
+        <div class="info">
+            <h2>How This Demonstrates Manipulation:</h2>
+            <ul>
+                <li>The "Toggle Rigging" button simulates how game operators can easily change win probabilities.</li>
+                <li>When rigging is on, the game becomes much harder to win, demonstrating how odds can be manipulated.</li>
+                <li>This shows why online gambling can be dangerous and unpredictable.</li>
+            </ul>
+        </div>
+
+        <div class="attribution">
+            Created by Your Name | 
+            <a href="https://www.instagram.com/your_instagram_handle/" target="_blank">
+                <img src="https://example.com/instagram-icon.png" alt="Instagram"> Follow on Instagram
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('grid');
+        const message = document.getElementById('message');
+        const resetBtn = document.getElementById('resetBtn');
+        const riggingBtn = document.getElementById('riggingBtn');
+        let isRigged = false;
+
+        function createGrid() {
+            grid.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const cell = document.createElement('button');
+                cell.classList.add('cell');
+                cell.addEventListener('click', () => revealCell(cell));
+                grid.appendChild(cell);
+            }
+        }
+
+        function revealCell(cell) {
+            cell.classList.add('pulse');
+            setTimeout(() => cell.classList.remove('pulse'), 500);
+
+            if (isRigged && Math.random() < 0.8) {
+                cell.textContent = '💣';
+                cell.style.backgroundColor = '#cf6679';
+                message.textContent = 'You lost! This demonstrates how easily these games can be rigged against the player.';
+            } else {
+                cell.textContent = '💎';
+                cell.style.backgroundColor = '#03dac6';
+                message.textContent = 'You won this round, but remember: in real gambling, the house always wins in the long run.';
+            }
+            cell.disabled = true;
+        }
+
+        function resetGame() {
+            createGrid();
+            message.textContent = '';
+        }
+
+        function toggleRigging() {
+            isRigged = !isRigged;
+            riggingBtn.textContent = isRigged ? 'Rigging On' : 'Rigging Off';
+            riggingBtn.classList.toggle('rigged');
+            message.textContent = isRigged ? 'The game is now rigged against you.' : 'Rigging is off, but remember real gambling is always risky.';
+        }
+
+        resetBtn.addEventListener('click', resetGame);
+        riggingBtn.addEventListener('click', toggleRigging);
+
+        createGrid();
+    </script>
+</body>
+</html>
